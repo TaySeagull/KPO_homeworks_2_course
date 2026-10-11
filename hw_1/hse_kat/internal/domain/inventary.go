@@ -1,4 +1,4 @@
-package main
+package domain
 
 // An interface that defines the methods for an item
 type InventoryItem interface {

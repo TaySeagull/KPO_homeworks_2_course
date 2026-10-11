@@ -1,4 +1,6 @@
-package main
+package service
+
+import "hse_kat/internal/domain"
 
 // A structure that represents a service center
 type ServiceCenter struct {
@@ -14,6 +16,6 @@ func NewServiceCenter(inspector Inspector) *ServiceCenter {
 }
 
 // Inspects the given vehicle using the service center's inspector
-func (s *ServiceCenter) Inspect(vehicle Vehicle) bool {
+func (s *ServiceCenter) Inspect(vehicle domain.Vehicle) bool {
 	return s.inspector.Inspect(vehicle)
 }

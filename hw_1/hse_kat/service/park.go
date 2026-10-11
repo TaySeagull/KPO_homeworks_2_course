@@ -1,11 +1,13 @@
-package main
+package service
 
-import "fmt"
+import (
+	"hse_kat/internal/domain"
+)
 
 // A structure that represents a park of hse_kat
 type Park struct {
-	vehicles      []Vehicle
-	equipment     []Equipment
+	vehicles      []domain.Vehicle
+	equipment     []domain.Equipment
 	serviceCenter *ServiceCenter
 }
 
@@ -17,7 +19,7 @@ func NewPark(serviceCenter *ServiceCenter) *Park {
 }
 
 // Adds a vehicle to the park if it passes inspection
-func (park *Park) AddVehicle(vehicle Vehicle) bool {
+func (park *Park) AddVehicle(vehicle domain.Vehicle) bool {
 	if park == nil || vehicle == nil || park.serviceCenter == nil {
 		return false
 	}
@@ -31,7 +33,7 @@ func (park *Park) AddVehicle(vehicle Vehicle) bool {
 }
 
 // Adds equipment to the park
-func (park *Park) AddEquipment(equipment Equipment) bool {
+func (park *Park) AddEquipment(equipment domain.Equipment) bool {
 	if park == nil || equipment == nil {
 		return false
 	}
@@ -49,13 +51,13 @@ func (park *Park) CalculateDailyEnergy() float64 {
 	var total float64
 
 	for _, vehicle := range park.vehicles {
-		if consumer, ok := vehicle.(EnergyConsumer); ok {
+		if consumer, ok := vehicle.(domain.EnergyConsumer); ok {
 			total += consumer.EnergyConsumption()
 		}
 	}
 
 	for _, equipment := range park.equipment {
-		if consumer, ok := equipment.(EnergyConsumer); ok {
+		if consumer, ok := equipment.(domain.EnergyConsumer); ok {
 			total += consumer.EnergyConsumption()
 		}
 	}
@@ -64,12 +66,12 @@ func (park *Park) CalculateDailyEnergy() float64 {
 }
 
 // Gets the list of the beginner friendly bikes in the park
-func (park *Park) GetBeginnerVehicles() []Vehicle {
+func (park *Park) GetBeginnerVehicles() []domain.Vehicle {
 	if park == nil {
 		return nil
 	}
 
-	var result []Vehicle
+	var result []domain.Vehicle
 
 	for _, vehicle := range park.vehicles {
 		if vehicle.Simplicity() >= 6 {
@@ -80,27 +82,25 @@ func (park *Park) GetBeginnerVehicles() []Vehicle {
 	return result
 }
 
-// Prints the inventory of the park
-func (park *Park) PrintInventory() {
+// Returns all inventory items in the park
+func (park *Park) GetInventory() []domain.InventoryItem {
 	if park == nil {
-		return
+		return nil
 	}
 
-	fmt.Println("=== Park Inventory ===")
+	items := make(
+		[]domain.InventoryItem,
+		0,
+		len(park.vehicles)+len(park.equipment),
+	)
 
-	fmt.Println("\nVehicles:")
 	for _, vehicle := range park.vehicles {
-		fmt.Printf("%s | Inventory number: %s\n",
-			vehicle.Name(),
-			vehicle.InventoryNumber(),
-		)
+		items = append(items, vehicle)
 	}
 
-	fmt.Println("\nEquipment:")
 	for _, equipment := range park.equipment {
-		fmt.Printf("%s | Inventory number: %s\n",
-			equipment.Name(),
-			equipment.InventoryNumber(),
-		)
+		items = append(items, equipment)
 	}
+
+	return items
 }
