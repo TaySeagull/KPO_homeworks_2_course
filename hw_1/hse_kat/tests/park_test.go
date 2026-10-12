@@ -392,3 +392,37 @@ func TestGetBeginnerVehiclesNilPark(test *testing.T) {
 		test.Errorf("expected nil beginner vehicles for nil park, got %v", got)
 	}
 }
+
+// Injection of fakeInspector
+
+type fakeInspector struct {
+	result bool
+}
+
+func (inspector *fakeInspector) Inspect(vehicle domain.Vehicle) bool {
+	return inspector.result
+}
+
+func TestAddVehicleWithFakeInspector(test *testing.T) {
+	fake := &fakeInspector{result: false}
+	serviceCenter := service.NewServiceCenter(fake)
+	park := service.NewPark(serviceCenter)
+
+	scooter := entities.NewScooter(
+		"Scooter",
+		"SC-001",
+		8,
+		2.5,
+		domain.Available,
+	)
+
+	added := park.AddVehicle(scooter)
+
+	if added {
+		test.Error("expected vehicle not to be added")
+	}
+
+	if len(park.GetInventory()) != 0 {
+		test.Error("expected park to remain empty")
+	}
+}
